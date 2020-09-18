@@ -4,8 +4,11 @@ const path = require("path");
 const app = express();
 const mongoose = require("mongoose");
 const morgan = require("morgan");
+require('dotenv-safe').config();
+let { verifyJWT }= require("./controller/AuthController")
 
 //Import Routes
+const routeLogin = require("./routes/login");
 const routeUser = require("./routes/user");
 
 // log file usign morgan
@@ -40,7 +43,12 @@ app.use(morgan("combined", { stream: accessLogStream }));
 app.use(morgan("combined"));
 
 // use routes (and api paths) after middlewares
+app.use("/api/login", routeLogin);
+
+app.use(verifyJWT)
+// following routes use verifyJWT for authentication
 app.use("/api/users", routeUser);
+
 
 let protocol = "http";
 let host = "localhost";

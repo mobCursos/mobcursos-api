@@ -2,6 +2,9 @@
 let express = require("express");
 let router = express.Router();
 const controller = require("../controller/UserController");
+// let { verifyJWT }= require("../controller/AuthController")
+
+// router.use(verifyJWT)
 
 router.get("/", controller.list);
 router.get("/:id", controller.get_by_id);

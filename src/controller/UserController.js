@@ -65,3 +65,16 @@ exports.remove = (req, res) => {
     }
   });
 };
+
+exports.login = (req, res, next) => {
+  // test this on database
+  if(req.boudy.username == 'admin' && req.body.password == 'admin') {
+    // auth ok
+    const id = 1 // must come from database
+    var token = jwt.sign({id}, process.env.SECRET, {
+      expiresIn: 300 // 5 min
+    });
+    return res.jason({ auth: true, token: token});
+  }
+  res.status(500).json({ message: "Login Inválido!"});
+};
