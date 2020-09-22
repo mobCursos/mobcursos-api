@@ -7,7 +7,10 @@
     "start": "nodemon src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Rodrigo Palermo",
+  "author": "Rodrigo Palermo <avilapalermo@gmail.com",
+  "contributors": [
+    "Leonardo Nunes <leonardogremio.silva@gmail.com>"
+  ],
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.0",
