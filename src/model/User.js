@@ -5,7 +5,6 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
-    id: Number, // manual id - use _id
     profile: String,
     name: String,
     avatar: String,
