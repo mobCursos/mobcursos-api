@@ -1,7 +1,6 @@
 const User = require("../model/User");
 
 // TODO: search (see -> https://github.com/profries/pi4_2020_2_crud_produtos/blob/master/controller/produto_controller.js)
-// TODO: use real _id, not manual id (manual id is used to simplify testes)
 
 // list all
 exports.list = (req, res) => {
@@ -14,9 +13,9 @@ exports.list = (req, res) => {
   });
 };
 
-// get by id (manual id)
+// get by _id
 exports.get_by_id = (req, res) => {
-  User.findOne({ id: req.params.id }, (err, user) => {
+  User.findOne({ _id: req.params.id }, (err, user) => {
     if (user) {
       res.json(user);
     } else {
@@ -25,7 +24,7 @@ exports.get_by_id = (req, res) => {
   });
 };
 
-// add (manual id)
+// add
 exports.add = (req, res) => {
   const newUser = new User(req.body);
 
@@ -35,12 +34,12 @@ exports.add = (req, res) => {
   });
 };
 
-//alter (manual id)
+//alter
 exports.alter = (req, res) => {
   let id = req.params.id;
   let userAlter = req.body;
   User.findOneAndUpdate(
-    { id: id },
+    { _id: id },
     userAlter,
     { new: true },
     (err, userActual) => {
@@ -53,8 +52,8 @@ exports.alter = (req, res) => {
 };
 
 exports.remove = (req, res) => {
-  const id_ = req.params.id; // not mondoDB _id
-  User.findOneAndDelete({ id: id_ }, (err, user) => {
+  const id = req.params.id;
+  User.findOneAndDelete({ _id: id }, (err, user) => {
     // TODO: handle err
     if (err) {
       console.log(err);

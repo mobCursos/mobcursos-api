@@ -69,9 +69,11 @@ app.use(morgan("combined", { stream: accessLogStream }));
 app.use(morgan("combined"));
 
 // use routes (and api paths) after middlewares
-app.use("/api/login", routeLogin);
+// comment the following line to ignore login
+//app.use("/api/login", routeLogin);
+// comment the folowing line to ignore jwt auth
+//app.use(verifyJWT)
 
-app.use(verifyJWT)
 // following routes use verifyJWT for authentication
 app.use("/api/users", routeUser);
 
