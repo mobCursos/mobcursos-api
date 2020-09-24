@@ -7,8 +7,9 @@ const controller = require("../controller/UserController");
 // router.use(verifyJWT)
 
 router.get("/", controller.list);
+// use /search before /:id
+router.get("/search", controller.search);
 router.get("/:id", controller.get_by_id);
-// router.get('/search', controller.get_by_name)
 router.post("/", controller.add);
 router.put("/:id", controller.alter);
 router.delete("/:id", controller.remove);
