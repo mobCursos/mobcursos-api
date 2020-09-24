@@ -65,15 +65,19 @@ exports.remove = (req, res) => {
   });
 };
 
-exports.login = (req, res, next) => {
-  // test this on database
-  if(req.boudy.username == 'admin' && req.body.password == 'admin') {
-    // auth ok
-    const id = 1 // must come from database
-    var token = jwt.sign({id}, process.env.SECRET, {
-      expiresIn: 300 // 5 min
+// search (filter by username)
+exports.search = (req, res) => {
+  if(req.query && req.query.username) {
+    const username = req.query.username
+    User.findOne({ username: username }, (err, user) => {
+      if (user) {
+        res.json(user);
+      } else {
+        res.sendStatus(404);
+      }
     });
-    return res.jason({ auth: true, token: token});
-  }
-  res.status(500).json({ message: "Login Inválido!"});
+  } else {
+    res.sendStatus(500);
+  };
+  
 };
