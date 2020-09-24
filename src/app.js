@@ -52,7 +52,7 @@ mongoose.connect("mongodb://localhost:27017/app_mobcursos", {
 }); //teacher uses then and catch Promises. Mongoose tutorial uses as below
 
 // teacher uses here too to mongoose be acessible by model/User ?????
-// mongoose.Promise = global.Promise
+mongoose.Promise = global.Promise
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
@@ -72,7 +72,7 @@ app.use(morgan("combined"));
 // comment the following line to ignore login
 app.use("/api/login", routeLogin);
 // comment the folowing line to ignore jwt auth
-//app.use(verifyJWT)
+// app.use(verifyJWT);
 
 // following routes use verifyJWT for authentication
 app.use("/api/users", routeUser);
