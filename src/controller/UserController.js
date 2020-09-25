@@ -25,9 +25,9 @@ exports.get_by_id = (req, res) => {
 };
 
 // add
+// todo: admin privilege
 exports.add = (req, res) => {
   const newUser = new User(req.body);
-
   newUser.save((err, user) => {
     if (err) return console.error(err);
     res.status(201).json(user);
