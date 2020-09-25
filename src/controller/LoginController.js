@@ -1,36 +1,61 @@
-const User = require("../model/User");
 const UserController = require("../controller/UserController");
+const User = require("../model/User");
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
-async function existUserAndPassword(req) {
-  const attemptUsername = req.body.username;
-  const attemptPassword = req.body.password;
+
+async function existUser(username) {
   let exists = false
-  await User.findOne({username: attemptUsername}, (err, user) => {
-    if (err) throw new Error('Erro ao buscar usuário')
-    if (user && user.password == attemptPassword) exists = true 
+  await User.findOne({username: username}, (err, user) => {
+    if (err) throw new Error('Error searching user')
+    if (user) exists = true 
   });
   return exists
-}
+};
 
-async function getUserId(username) {
-  let userId = false
-  await User.findOne({ username: username}, (err, user) => {
-    if (err) throw new Error("Erro ao buscar id do usuário")
-    if (user) userId = user._id
-  });
-  return userId
-}
-
-exports.login = async (req, res, next) => {
-  if(await existUserAndPassword(req)) {
-    console.log("Login Authentication OK")
-    const id = await getUserId(req.body.username) // must come from database
-    var token = jwt.sign({id}, process.env.SECRET, {
-      expiresIn: 3600 // 60 min
-    });
-    return res.json({ auth: true, token: token});
+exports.login = (req, res, next) => {
+  if (req.body && req.body.username && req.body.password) {
+    const username = req.body.username
+    const plaintextPassword = req.body.password
+    User.findOne({ username: username }, (err, user) => {
+      if (err) {
+        return res.status(500).send(err)
+      }
+      const validPassword = bcrypt.compareSync(plaintextPassword, user.password)
+      if (user && validPassword) {
+        console.log("Login Authentication OK")
+        const id = user._id
+        var token = jwt.sign({id}, process.env.SECRET, {
+          expiresIn: "1h"
+        });
+        res.status(201).send({ auth: true, token: token});
+      } else {
+          console.log("Login Authentication FAIL")
+          res.status(401).send("User or password invalid!")
+      }
+    })
   }
-  console.log("Login Authentication FAIL")
-  res.status(500).json({ message: "Login Inválido!"});
+};
+
+exports.signin = async (req, res, next) => {
+  if (await existUser(req.body.username)) {
+    console.log('Username already in use.')
+    res.status(500).send('Username already in use.')
+  } 
+  else {
+    const plaintextPassword = req.body.password;
+    // auto-gen a salt and hash
+    bcrypt.hash(plaintextPassword, saltRounds, function(err, hash) {
+        if (err) {
+          res.status(500).send({ msg: err });
+          return console.error(err);
+        }
+        // Store hash in password DB
+        // console.log(req.body)
+        req.body.password = hash
+        // console.log(req.body)
+        UserController.add(req, res)        
+    });
+  }
 };

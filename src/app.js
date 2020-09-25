@@ -5,36 +5,13 @@ const app = express();
 const mongoose = require("mongoose");
 const morgan = require("morgan");
 require('dotenv-safe').config();
-let { verifyJWT }= require("./controller/AuthController")
+
+// import controller (for jwt verify)
+const {verifyJWT} = require("./controller/AuthController")
 
 // import Routes
 const routeLogin = require("./routes/login");
 const routeUser = require("./routes/user");
-
-// bcrypt tests
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
-const myPlaintextPassword = 's0/\/\P4$$w0rD';
-const someOtherPlaintextPassword = 'not_bacon';
-
-// auto-gen a salt and hash
-let hash1 = 0
-bcrypt.hash(myPlaintextPassword, saltRounds, function(err, hash) {
-    // Store hash in your password DB.
-    hash1 = hash
-    console.log(hash1)
-});
-
-// to check a password:
-// Load hash from your password DB.
-bcrypt.compare(myPlaintextPassword, hash1, function(err, result) {
-  // result == true
-  console.log(result)
-});
-bcrypt.compare(someOtherPlaintextPassword, hash1, function(err, result) {
-  // result == false
-  console.log(result)
-});
 
 // log file usign morgan
 // create a write stream (append mode)
@@ -72,7 +49,7 @@ app.use(morgan("combined"));
 // comment the following line to ignore login
 app.use("/api/login", routeLogin);
 // comment the folowing line to ignore jwt auth
-// app.use(verifyJWT);
+app.use(verifyJWT);
 
 // following routes use verifyJWT for authentication
 app.use("/api/users", routeUser);
