@@ -1,8 +1,11 @@
 {
-  "name": "02-crud-clientes",
+  "name": "mobcursos-api",
   "version": "1.0.0",
-  "description": "Class example - crud",
+  "description": "Online courses - Educational project",
   "main": "app.js",
+  "engines": {
+    "node": "12.x"
+  },
   "scripts": {
     "start": "nodemon src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
