@@ -20,9 +20,8 @@ const accessLogStream = fs.createWriteStream(
   { flags: "a" }
 );
 
-
 // database connection - using mongoose
-mongoose.connect("mongodb://localhost:27017/app_mobcursos", {
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/app_mobcursos", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false, // skip warnings on find and modify
@@ -56,8 +55,8 @@ app.use("/api/users", routeUser);
 
 
 let protocol = "http";
-let host = "localhost";
-let port = 3000;
+let host = process.env.HEROKU_APP_NAME || "localhost";
+let port = process.env.PORT || 3000;
 
 app.listen(port, () => {
   console.log(`Server started at ${protocol}://${host}:${port}`);
