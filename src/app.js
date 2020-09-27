@@ -7,7 +7,7 @@ const morgan = require("morgan");
 require('dotenv-safe').config();
 
 // import controller (for jwt verify)
-const {verifyJWT} = require("./controller/AuthController")
+const { verifyJWT, authRole } = require("./controller/AuthController")
 
 // import Routes
 const routeLogin = require("./routes/login");
@@ -51,7 +51,7 @@ app.use("/api/login", routeLogin);
 app.use(verifyJWT);
 
 // following routes use verifyJWT for authentication
-app.use("/api/users", routeUser);
+app.use("/api/users", authRole(['admin']), routeUser);
 
 
 let protocol = "http";
