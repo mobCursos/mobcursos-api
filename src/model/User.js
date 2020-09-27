@@ -5,7 +5,7 @@ mongoose.Promise = global.Promise
 
 const userSchema = new mongoose.Schema(
   {
-    profile: String,
+    role: String,
     name: String,
     avatar: String,
     username: String,

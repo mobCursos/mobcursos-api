@@ -25,11 +25,15 @@ exports.login = (req, res, next) => {
       const validPassword = bcrypt.compareSync(plaintextPassword, user.password)
       if (user && validPassword) {
         console.log("Login Authentication OK")
+        // user params for use in authorization middleware
         const id = user._id
-        var token = jwt.sign({id}, process.env.SECRET, {
+        const role = user.role
+        var token = jwt.sign({id, role}, process.env.SECRET, {
           expiresIn: "1h"
         });
-        res.status(201).send({ auth: true, token: token});
+        res.status(201).send({
+          auth: true,
+          token: token});
       } else {
           console.log("Login Authentication FAIL")
           res.status(401).send("User or password invalid!")
