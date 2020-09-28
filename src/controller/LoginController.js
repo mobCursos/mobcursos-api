@@ -22,22 +22,25 @@ exports.login = (req, res, next) => {
       if (err) {
         return res.status(500).send(err)
       }
-      const validPassword = bcrypt.compareSync(plaintextPassword, user.password)
-      if (user && validPassword) {
-        console.log("Login Authentication OK")
-        // user params for use in authorization middleware
-        const id = user._id
-        const role = user.role
-        var token = jwt.sign({id, role}, process.env.SECRET, {
-          expiresIn: "1h"
-        });
-        res.status(201).send({
-          auth: true,
-          token: token});
-      } else {
-          console.log("Login Authentication FAIL")
-          res.status(401).send("User or password invalid!")
+      if(user) {
+        const validPassword = bcrypt.compareSync(plaintextPassword, user.password)
+        if (validPassword) {
+          console.log("Login Authentication OK")
+          // user params for use in authorization middleware
+          const id = user._id
+          const role = user.role
+          console.log("role login: " + role)
+          var token = jwt.sign({id, role}, process.env.SECRET, {
+            expiresIn: "5m"
+          });
+          return res.status(201).send({
+            auth: true,
+            token: token});
+        }
       }
+      console.log("Login Authentication FAIL")
+      res.status(401).send("User or password invalid!")
+        
     })
   }
 };
@@ -62,4 +65,9 @@ exports.signin = async (req, res, next) => {
         UserController.add(req, res)        
     });
   }
+};
+
+exports.logout = (req, res) => {
+  console.log("Logout - not implemented");
+  res.status(200).send("Logout - not imnplemented")
 };

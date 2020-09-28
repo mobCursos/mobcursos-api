@@ -6,12 +6,13 @@ const mongoose = require("mongoose");
 const morgan = require("morgan");
 require('dotenv-safe').config();
 
-// import controller (for jwt verify)
-const { verifyJWT, authRole } = require("./controller/AuthController")
+// import controller
+const { verifyJWT, authRole } = require("./controller/AuthController");
 
 // import Routes
 const routeLogin = require("./routes/login");
 const routeUser = require("./routes/user");
+const routeCoursetemp = require("./routes/coursetemp");
 
 // log file usign morgan
 // create a write stream (append mode)
@@ -46,12 +47,13 @@ app.use(morgan("combined"));
 
 // use routes (and api paths) after middlewares
 // comment the following line to ignore login
-app.use("/api/login", routeLogin);
+app.use("/api", routeLogin);
 // comment the folowing line to ignore jwt auth
 app.use(verifyJWT);
 
-// following routes use verifyJWT for authentication
+// // following routes use verifyJWT for authentication
 app.use("/api/users", authRole(['admin']), routeUser);
+app.use("/api/coursetemp", routeCoursetemp);
 
 
 let protocol = "http";

@@ -12,23 +12,29 @@ exports.verifyJWT = (req, res, next) => {
         auth: false,
         message: 'Failed to authenticate.'
       });
-
     // if ok, save on request for future use
     req.userId = decoded.id;
-    req.userRole = decoded.role
+    req.userRole = decoded.role;
+    // console.log("jwt res.userRole: "+ req.userRole)
     next();
   });
 };
 
 exports.authRole = (roles) => {
   return (req, res, next) => {
+    authorized = false
+    // console.log(roles)
     roles.forEach(role => {
-      authorized = req.userRole === role
+      // console.log(role + ": " + authorized)
+      if (req.userRole === role) {
+        authorized = true
+        // console.log("authorization granted to: " + role)
+      }
     });
-    if (authorized)
+    // console.log("final authoriaziton: "+authorized)
+    if (authorized) {
       next();
-    else res.status(401).send("User not authorized")
+    }
+    else res.status(401).send("User not authorized.")
   }
-  
-  
 };
