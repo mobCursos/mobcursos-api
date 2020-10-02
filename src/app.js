@@ -12,7 +12,7 @@ const { verifyJWT, authRole } = require("./controller/AuthController");
 // import Routes
 const routeLogin = require("./routes/login");
 const routeUser = require("./routes/user");
-const routeCoursetemp = require("./routes/coursetemp");
+const routeCourse = require("./routes/course");
 
 // log file usign morgan
 // create a write stream (append mode)
@@ -53,7 +53,7 @@ app.use(verifyJWT);
 
 // // following routes use verifyJWT for authentication
 app.use("/api/users", authRole(['admin']), routeUser);
-app.use("/api/coursetemp", routeCoursetemp);
+app.use("/api/courses", routeCourse);
 
 
 let protocol = "http";
