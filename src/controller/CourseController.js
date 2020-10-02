@@ -27,23 +27,18 @@ exports.add = (req, res) => {
 
 // todo: utilizar dados db e pesquisar pelo db
 exports.subscribe = async function(req, res) {
-  // user id
   const studentId = req.userId
   const courseId = req.body.courseId
 
   // (fazer em etapa anterior, no crud cursos)
   // pesquisar cursos (somente cursos em que aluno não está matriculado)
-  // curso escolhido
 
   let subscribed = await isStudentSubscribed(courseId, studentId)
-  console.log("NA FUNCAO PARENT: "+ subscribed)
-  
 
   if ( subscribed ) {
     return res.status(500).send('Student already subscribed on this course.')
   }
-  const update = { $push: { students_id: [ studentId ]}};
-  console.log('INSCREVENDO ALUNO')
+  const update = { $push: { students_id: studentId }};
   Course.findByIdAndUpdate( 
     courseId,
     update,
@@ -57,48 +52,30 @@ exports.subscribe = async function(req, res) {
   });
 };
 
-// todo: utilizar dados db e pesquisar pelo 
-
-exports.unsubscribe = (req, res) => {
-  // user id
+// todo: utilizar dados db e pesquisar pelo db
+exports.unsubscribe = async function(req, res) {
   const studentId = req.userId
   const courseId = req.body.courseId
 
   // (fazer em etapa anterior, no crud cursos)
   // pesquisar cursos (somente cursos em que aluno não está matriculado)
-  // curso escolhido
-  Course.findById( courseId, (err, course) => {
-    if (err) {
-      return res.status(500).send(err)
-    } else {
-      // console.log(course)
-      let subscribed = false
-      let index = 0
-      let studentIndex = index;
-      course.students_id.forEach( id => { // verifica todo o valor 
-        if ( id == studentId ) {
-          subscribed = true;
-          studentIndex = index;
-        }
-        index++;
-      });
-      if ( !subscribed ) {
-        res.status(500).send('Student not subscribed on this course.')
+
+  let subscribed = await isStudentSubscribed(courseId, studentId)
+
+  if ( !subscribed ) {
+    return res.status(500).send('Student not subscribed on this course.')
+  }
+  const update = { $pull: { students_id: studentId }};
+  Course.findByIdAndUpdate( 
+    courseId,
+    update,
+    { new: true },
+    (err, courseActual) => {
+      if (err) {
+        res.status(500).send(err)
       } else {
-        course.students_id.splice(studentIndex,1);
-        Course.findByIdAndUpdate( 
-          courseId,
-          course,
-          { new: true },
-          ( err, courseActual ) => {
-            if (err) {
-              res.status(500).send(err)
-            } else {
-              res.json( courseActual )
-            }
-        });
-      }    
-    }
+        res.json(courseActual)
+      }
   });
 };
 
