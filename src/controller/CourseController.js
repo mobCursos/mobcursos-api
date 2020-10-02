@@ -26,7 +26,7 @@ exports.add = (req, res) => {
 };
 
 // todo: utilizar dados db e pesquisar pelo db
-exports.subscribe = (req, res) => {
+exports.subscribe = async function(req, res) {
   // user id
   const studentId = req.userId
   const courseId = req.body.courseId
@@ -34,34 +34,26 @@ exports.subscribe = (req, res) => {
   // (fazer em etapa anterior, no crud cursos)
   // pesquisar cursos (somente cursos em que aluno não está matriculado)
   // curso escolhido
-  Course.findById( courseId, (err, course) => {
-    if (err) {
-      return res.status(500).send(err)
-    } else {
-      // console.log(course)
-      subscribed = false
-      course.students_id.forEach( id => { // verifica todo o valor 
-        if ( id == studentId ) {
-          subscribed = true
-        } 
-      });
-      if ( subscribed ) {
-        res.status(500).send('Student already subscribed on this course.')
+
+  let subscribed = await isStudentSubscribed(courseId, studentId)
+  console.log("NA FUNCAO PARENT: "+ subscribed)
+  
+
+  if ( subscribed ) {
+    return res.status(500).send('Student already subscribed on this course.')
+  }
+  const update = { $push: { students_id: [ studentId ]}};
+  console.log('INSCREVENDO ALUNO')
+  Course.findByIdAndUpdate( 
+    courseId,
+    update,
+    { new: true },
+    (err, courseActual) => {
+      if (err) {
+        res.status(500).send(err)
       } else {
-        course.students_id.push(studentId)
-        Course.findByIdAndUpdate( 
-          courseId,
-          course,
-          { new: true },
-          (err, courseActual) => {
-            if (err) {
-              res.status(500).send(err)
-            } else {
-              res.json(courseActual)
-            }
-        });
-      }    
-    }
+        res.json(courseActual)
+      }
   });
 };
 
@@ -98,14 +90,42 @@ exports.unsubscribe = (req, res) => {
           courseId,
           course,
           { new: true },
-          (err, courseActual) => {
+          ( err, courseActual ) => {
             if (err) {
               res.status(500).send(err)
             } else {
-              res.json(courseActual)
+              res.json( courseActual )
             }
         });
       }    
     }
   });
+};
+
+async function isStudentSubscribed( courseId, studentId ) {
+  const course = await Course.findById( courseId, (err, course) => {
+    if (err) {
+      throw new Exception(err)
+    } else {
+      return course
+    }
+  });
+  // console.log(course)
+  let subscribed = new Promise(
+
+    function(resolve, reject) {
+      let value = false
+      let i = 0
+      let studentsIdArray = course.students_id
+      while ( !value && i < studentsIdArray.length ) {
+        if ( studentsIdArray[i] == studentId ) {
+          value = true
+          //resolve(value)
+        }
+        i++
+      }
+      resolve(value)
+    } 
+  )
+  return subscribed
 };

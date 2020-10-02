@@ -7,7 +7,7 @@ const courseSchema = new mongoose.Schema(
     name: String,
     description: String,
     teacher_id: String,
-    students_id: []
+    students_id: [String]
   },
   {
     versionKey: false,
