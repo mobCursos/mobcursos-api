@@ -1,6 +1,5 @@
 const Course = require("../model/Course");
-
-// console.log(Course)
+const User = require("../model/User");
 
 exports.list = (req, res) => {
   Course.find((err, courses) => {
@@ -38,16 +37,30 @@ exports.subscribe = async function(req, res) {
   if ( subscribed ) {
     return res.status(500).send('Student already subscribed on this course.')
   }
-  const update = { $push: { students_id: studentId }};
+  // tratar possivel erro em uma das operacoes ou ambas
+  const updateStudentId = { $push: { students: studentId }};
   Course.findByIdAndUpdate( 
     courseId,
-    update,
+    updateStudentId,
     { new: true },
     (err, courseActual) => {
       if (err) {
-        res.status(500).send(err)
+        return res.status(500).send(err)
       } else {
         res.json(courseActual)
+      }
+  });
+  const updateCourseId = { $push: { courses: courseId }};
+  User.findByIdAndUpdate( 
+    studentId,
+    updateCourseId,
+    { new: true },
+    (err, userActual) => {
+      if (err) {
+        // deve desfazer a operação anterior (usar transaction?)
+        return res.status(500).send(err)
+      } else {
+        //res.json(userActual)
       }
   });
 };
@@ -65,16 +78,30 @@ exports.unsubscribe = async function(req, res) {
   if ( !subscribed ) {
     return res.status(500).send('Student not subscribed on this course.')
   }
-  const update = { $pull: { students_id: studentId }};
+  // tratar possivel erro em uma das operacoes ou ambas
+  const updateStudentId = { $pull: { students: studentId }};
   Course.findByIdAndUpdate( 
     courseId,
-    update,
+    updateStudentId,
     { new: true },
     (err, courseActual) => {
       if (err) {
-        res.status(500).send(err)
+        return res.status(500).send(err)
       } else {
         res.json(courseActual)
+      }
+  });
+  const updateCourseId = { $pull: { courses: courseId }};
+  User.findByIdAndUpdate( 
+    studentId,
+    updateCourseId,
+    { new: true },
+    (err, userActual) => {
+      if (err) {
+        // deve desfazer a operação anterior (usar transaction?)
+        return res.status(500).send(err)
+      } else {
+        //res.json(userActual)
       }
   });
 };
@@ -93,7 +120,7 @@ async function isStudentSubscribed( courseId, studentId ) {
     function(resolve, reject) {
       let value = false
       let i = 0
-      let studentsIdArray = course.students_id
+      let studentsIdArray = course.students
       while ( !value && i < studentsIdArray.length ) {
         if ( studentsIdArray[i] == studentId ) {
           value = true
