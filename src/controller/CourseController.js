@@ -87,3 +87,14 @@ exports.remove = (req, res) => {
     }
   });
 };
+exports.procurar = (req, res, next) => {
+  if (req.query && req.query.name){
+      const paramName = req.query.name;
+      Course.find({name: paramName}, (err, courses) => {
+          if(err){
+              res.status(500).send(err);
+          }
+          res.json(courses);
+      });
+  }
+}
