@@ -1,6 +1,6 @@
-const Coursetemp = require("../model/Coursetemp");
+const Course = require("../model/Course");
 
-// console.log(Coursetemp)
+// console.log(Course)
 
 // todo: utilizar dados do db
 exports.enroll = (req, res) => {
@@ -10,7 +10,7 @@ exports.enroll = (req, res) => {
   // (fazer em etapa anterior, no crud cursos)
   // pesquisar cursos (somente cursos em que aluno não está matriculado)
   // curso escolhido
-  chosenCourse = Coursetemp[0]
+  chosenCourse = Course[0]
   console.log(chosenCourse)
   enrolled = false
   chosenCourse.students_id.forEach( id => { // verifica todo o valor 
