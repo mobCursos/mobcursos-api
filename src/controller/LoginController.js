@@ -31,7 +31,7 @@ exports.login = (req, res, next) => {
           const role = user.role
           console.log("role login: " + role)
           var token = jwt.sign({id, role}, process.env.SECRET, {
-            expiresIn: "5m"
+            expiresIn: "1h"
           });
           return res.status(201).send({
             auth: true,
