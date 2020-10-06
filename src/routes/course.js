@@ -5,7 +5,7 @@ const { authRole } = require("../controller/AuthController");
 
 // todo: define roles
 router.get("/", controller.list);
-router.get('/search', controller.procurar);
+router.get("/search", controller.search);
 router.get("/:id", controller.get_by_id);
 
 router.post("/subscribe", authRole(['aluno']), controller.subscribe);
