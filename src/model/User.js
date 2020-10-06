@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema(
     username: String,
     password: String,
     email: String,
+    courses: [{type: mongoose.Schema.Types.ObjectId, ref: "Course"}]
   },
   {
     versionKey: false,

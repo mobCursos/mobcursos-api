@@ -2,18 +2,18 @@ const mongoose = require("mongoose");
 
 mongoose.Promise = global.Promise
 
-const curseSchema = new mongoose.Schema(
+const courseSchema = new mongoose.Schema(
   {
     name: String,
-    teacher_id: String,
     description: String,
-    students_id: [],
+    teacher_id: String,
+    students: [{type: mongoose.Schema.Types.ObjectId, ref: "User"}]
   },
   {
     versionKey: false,
   }
 );
 
-const Course = mongoose.model("Course", curseSchema);
+const Course = mongoose.model("Course", courseSchema);
 
 module.exports = Course;
