@@ -81,84 +81,104 @@ exports.search = (req, res, next) => {
 
 // todo: utilizar dados db e pesquisar pelo db
 exports.subscribe = async function(req, res) {
+  // todo: error handling if values do not exist
   const studentId = req.userId
   const courseId = req.body.courseId
 
-  // (fazer em etapa anterior, no crud cursos)
-  // pesquisar cursos (somente cursos em que aluno não está matriculado)
-
-  let subscribed = await isStudentSubscribed(courseId, studentId)
-
-  if ( subscribed ) {
-    return res.status(500).send('Student already subscribed on this course.')
+  try {
+    const existsCourse =  await existsCourseId(courseId);
+    if (existsCourse) {
+      // (fazer em etapa anterior, no crud cursos)
+      // pesquisar cursos (somente cursos em que aluno não está matriculado)
+  
+      let subscribed = await isStudentSubscribed(courseId, studentId)
+  
+      if ( subscribed ) {
+        return res.status(500).send('Student already subscribed on this course.')
+      }
+      // tratar possivel erro em uma das operacoes ou ambas
+      const updateStudentId = { $push: { students: studentId }};
+      Course.findByIdAndUpdate( 
+        courseId,
+        updateStudentId,
+        { new: true },
+        (err, courseActual) => {
+          if (err) {
+            return res.status(500).send(err)
+          } else {
+            res.json(courseActual)
+          }
+      });
+      const updateCourseId = { $push: { courses: courseId }};
+      User.findByIdAndUpdate( 
+        studentId,
+        updateCourseId,
+        { new: true },
+        (err, userActual) => {
+          if (err) {
+            // deve desfazer a operação anterior (usar transaction?)
+            return res.status(500).send(err)
+          // } else {
+          //  res.json(userActual)
+          }
+      });
+    } else {
+      res.status(404).send({ msg: "Course does not exist."})
+    }
+  } catch(error){
+    res.status(404).send({ msg: "Incorrect course id." })
   }
-  // tratar possivel erro em uma das operacoes ou ambas
-  const updateStudentId = { $push: { students: studentId }};
-  Course.findByIdAndUpdate( 
-    courseId,
-    updateStudentId,
-    { new: true },
-    (err, courseActual) => {
-      if (err) {
-        return res.status(500).send(err)
-      } else {
-        res.json(courseActual)
-      }
-  });
-  const updateCourseId = { $push: { courses: courseId }};
-  User.findByIdAndUpdate( 
-    studentId,
-    updateCourseId,
-    { new: true },
-    (err, userActual) => {
-      if (err) {
-        // deve desfazer a operação anterior (usar transaction?)
-        return res.status(500).send(err)
-      } else {
-        //res.json(userActual)
-      }
-  });
 };
 
 // todo: utilizar dados db e pesquisar pelo db
 exports.unsubscribe = async function(req, res) {
+  // todo: error handling if values do not exist
   const studentId = req.userId
   const courseId = req.body.courseId
 
-  // (fazer em etapa anterior, no crud cursos)
-  // pesquisar cursos (somente cursos em que aluno não está matriculado)
+  try {
+    const existsCourse =  await existsCourseId(courseId);
+    if (existsCourse) {
+      // (fazer em etapa anterior, no crud cursos)
+      // pesquisar cursos (somente cursos em que aluno não está matriculado)
 
-  let subscribed = await isStudentSubscribed(courseId, studentId)
+      let subscribed = await isStudentSubscribed(courseId, studentId)
 
-  if ( !subscribed ) {
-    return res.status(500).send('Student not subscribed on this course.')
+      if ( !subscribed ) {
+        return res.status(500).send('Student not subscribed on this course.')
+      }
+      // tratar possivel erro em uma das operacoes ou ambas
+      const updateStudentId = { $pull: { students: studentId }};
+      Course.findByIdAndUpdate( 
+        courseId,
+        updateStudentId,
+        { new: true },
+        (err, courseActual) => {
+          if (err) {
+            return res.status(500).send(err)
+          } else {
+            res.json(courseActual)
+          }
+      });
+      const updateCourseId = { $pull: { courses: courseId }};
+      User.findByIdAndUpdate( 
+        studentId,
+        updateCourseId,
+        { new: true },
+        (err, userActual) => {
+          if (err) {
+            // deve desfazer a operação anterior (usar transaction?)
+            return res.status(500).send(err)
+          // } else {
+          //   res.json(userActual)
+          }
+      });
+    } else {
+      res.status(404).send({ msg: "Course does not exist."})
+    }
+  } catch(error){
+    res.status(404).send({ msg: "Incorrect course id." })
   }
-  // tratar possivel erro em uma das operacoes ou ambas
-  const updateStudentId = { $pull: { students: studentId }};
-  Course.findByIdAndUpdate( 
-    courseId,
-    updateStudentId,
-    { new: true },
-    (err, courseActual) => {
-      if (err) {
-        return res.status(500).send(err)
-      } else {
-        res.json(courseActual)
-      }
-  });
-  const updateCourseId = { $pull: { courses: courseId }};
-  User.findByIdAndUpdate( 
-    studentId,
-    updateCourseId,
-    { new: true },
-    (err, userActual) => {
-      if (err) {
-        // deve desfazer a operação anterior (usar transaction?)
-        return res.status(500).send(err)
-      } else {
-        //res.json(userActual)
-      }
-  });
 };
 
 async function isStudentSubscribed( courseId, studentId ) {
@@ -187,4 +207,13 @@ async function isStudentSubscribed( courseId, studentId ) {
     } 
   )
   return subscribed
+};
+
+async function existsCourseId(id) {
+  let exists = false
+  await Course.findOne({_id: id}, (err, course) => {
+    //if (err) throw new Error('Error searching course.')
+    if (course) exists = true 
+  });
+  return exists
 };
