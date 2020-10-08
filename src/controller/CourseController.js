@@ -79,6 +79,28 @@ exports.search = (req, res, next) => {
   }
 }
 
+// search (filter)
+exports.search = (req, res) => {
+  if(req.query) {
+    const name = req.query.name
+    const description = req.query.description
+
+    Course.find({ name:        { $regex: new RegExp(name, "ig") }, 
+                  description: { $regex: new RegExp(description, "ig") }
+              }, (err, courses) => {
+                if (err) {
+                  res.status(500).send({ msg: err });
+                  return console.error(err);
+                }
+                if (courses) {
+                  res.json(courses);
+                } else {
+                  res.status(404).send({ msg: "Courses not found." });
+                }
+              });
+    }
+};
+
 // todo: utilizar dados db e pesquisar pelo db
 exports.subscribe = async function(req, res) {
   // todo: error handling if values do not exist
