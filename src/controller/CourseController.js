@@ -46,9 +46,12 @@ exports.alter = (req, res) => {
     { new: true },
     (err, courseActual) => {
       if (err) {
-        res.send({ msg: err });
-      }
-      res.status(201).json(courseActual);
+        res.status(500).send({ msg: "Error on course update." });
+        console.error(err);
+      } else if (courseActual === null) {
+        res.sendStatus(404);
+      } else
+      res.json(courseActual);
     }
   );
 };
@@ -58,47 +61,14 @@ exports.remove = (req, res) => {
   Course.findOneAndDelete({ _id: id }, (err, course) => {
     // TODO: handle err
     if (err) {
-      console.log(err);
+      res.status(500).send({ msg: "Erro on course delete."});
+      console.error(err);
     } else if (course === null) {
       res.sendStatus(404);
     } else {
       res.json(course);
     }
   });
-};
-
-exports.search = (req, res, next) => {
-  if (req.query && req.query.name){
-      const paramName = req.query.name;
-      Course.find({name: paramName}, (err, courses) => {
-          if(err){
-              res.status(500).send({ msg: err });
-          }
-          res.json(courses);
-      });
-  }
-}
-
-// search (filter)
-exports.search = (req, res) => {
-  if(req.query) {
-    const name = req.query.name
-    const description = req.query.description
-
-    Course.find({ name:        { $regex: new RegExp(name, "ig") }, 
-                  description: { $regex: new RegExp(description, "ig") }
-              }, (err, courses) => {
-                if (err) {
-                  res.status(500).send({ msg: err });
-                  return console.error(err);
-                }
-                if (courses) {
-                  res.json(courses);
-                } else {
-                  res.status(404).send({ msg: "Courses not found." });
-                }
-              });
-    }
 };
 
 // todo: utilizar dados db e pesquisar pelo db
@@ -116,7 +86,7 @@ exports.subscribe = async function(req, res) {
       let subscribed = await isStudentSubscribed(courseId, studentId)
   
       if ( subscribed ) {
-        return res.status(500).send('Student already subscribed on this course.')
+        return res.status(500).send({ msg: 'Student already subscribed on this course.'})
       }
       // tratar possivel erro em uma das operacoes ou ambas
       const updateStudentId = { $push: { students: studentId }};
@@ -167,7 +137,7 @@ exports.unsubscribe = async function(req, res) {
       let subscribed = await isStudentSubscribed(courseId, studentId)
 
       if ( !subscribed ) {
-        return res.status(500).send('Student not subscribed on this course.')
+        return res.status(500).send({ msg: 'Student not subscribed on this course.'})
       }
       // tratar possivel erro em uma das operacoes ou ambas
       const updateStudentId = { $pull: { students: studentId }};
@@ -229,6 +199,28 @@ async function isStudentSubscribed( courseId, studentId ) {
     } 
   )
   return subscribed
+};
+
+// search (filter)
+exports.search = (req, res) => {
+  if(req.query) {
+    const name = req.query.name
+    const description = req.query.description
+
+    Course.find({ name:        { $regex: new RegExp(name, "ig") }, 
+                  description: { $regex: new RegExp(description, "ig") }
+              }, (err, courses) => {
+                if (err) {
+                  res.status(500).send({ msg: err });
+                  return console.error(err);
+                }
+                if (courses) {
+                  res.json(courses);
+                } else {
+                  res.status(404).send({ msg: "Courses not found." });
+                }
+              });
+    }
 };
 
 async function existsCourseId(id) {

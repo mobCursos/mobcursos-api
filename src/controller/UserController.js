@@ -48,8 +48,11 @@ exports.alter = (req, res) => {
       { new: true },
       (err, userActual) => {
         if (err) {
-          res.send(err);
-        }
+          res.status(500).send({ msg: "Error on user update." });
+          console.error(err);
+        } else if (userActual === null) {
+          res.sendStatus(404);
+        } else
         res.json(userActual);
       }
     );
@@ -61,7 +64,8 @@ exports.remove = (req, res) => {
   User.findOneAndDelete({ _id: id }, (err, user) => {
     // TODO: handle err
     if (err) {
-      console.log(err);
+      res.status(500).send({ msg: "Erro on course delete."});
+      console.error(err);
     } else if (user === null) {
       res.sendStatus(404);
     } else {
