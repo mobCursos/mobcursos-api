@@ -2,7 +2,9 @@ const Course = require("../model/Course");
 const User = require("../model/User");
 
 exports.list = (req, res) => {
-  Course.find((err, courses) => {
+  Course.find().
+  populate('students', ['name', 'username']).
+  exec((err, courses) => {
     if (err) {
       res.status(500).send({ msg: err });
       return console.error(err);
@@ -13,7 +15,9 @@ exports.list = (req, res) => {
 
 // get by _id
 exports.get_by_id = (req, res) => {
-  Course.findOne({ _id: req.params.id }, (err, course) => {
+  Course.findOne({ _id: req.params.id }).
+  populate('students', ['name', 'username']).
+  exec((err, course) => {
     if (course) {
       res.json(course);
     } else {
