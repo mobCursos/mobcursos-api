@@ -29,9 +29,9 @@ exports.add = (req, res) => {
   const newCourse = new Course(req.body);
   newCourse.save((err, course) => {
     if (err) {
-      res.status(500).send(err)
+      res.status(500).send({ msg: err })
     } else {
-      res.send(course)
+      res.status(201).json(course)
     }
   })
 };
@@ -46,9 +46,9 @@ exports.alter = (req, res) => {
     { new: true },
     (err, courseActual) => {
       if (err) {
-        res.send(err);
+        res.send({ msg: err });
       }
-      res.json(courseActual);
+      res.status(201).json(courseActual);
     }
   );
 };
@@ -72,7 +72,7 @@ exports.search = (req, res, next) => {
       const paramName = req.query.name;
       Course.find({name: paramName}, (err, courses) => {
           if(err){
-              res.status(500).send(err);
+              res.status(500).send({ msg: err });
           }
           res.json(courses);
       });
@@ -126,7 +126,7 @@ exports.subscribe = async function(req, res) {
         { new: true },
         (err, courseActual) => {
           if (err) {
-            return res.status(500).send(err)
+            return res.status(500).send({ msg: err })
           } else {
             res.json(courseActual)
           }
@@ -139,7 +139,7 @@ exports.subscribe = async function(req, res) {
         (err, userActual) => {
           if (err) {
             // deve desfazer a operação anterior (usar transaction?)
-            return res.status(500).send(err)
+            return res.status(500).send({ msg: err })
           // } else {
           //  res.json(userActual)
           }
@@ -177,7 +177,7 @@ exports.unsubscribe = async function(req, res) {
         { new: true },
         (err, courseActual) => {
           if (err) {
-            return res.status(500).send(err)
+            return res.status(500).send({ msg: err })
           } else {
             res.json(courseActual)
           }
@@ -190,7 +190,7 @@ exports.unsubscribe = async function(req, res) {
         (err, userActual) => {
           if (err) {
             // deve desfazer a operação anterior (usar transaction?)
-            return res.status(500).send(err)
+            return res.status(500).send({ msg: err })
           // } else {
           //   res.json(userActual)
           }
