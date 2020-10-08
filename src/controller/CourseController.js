@@ -65,7 +65,7 @@ exports.remove = (req, res) => {
   Course.findOneAndDelete({ _id: id }, (err, course) => {
     // TODO: handle err
     if (err) {
-      res.status(500).send({ msg: "Erro on course delete."});
+      res.status(500).send({ msg: "Error on course delete."});
       console.error(err);
     } else if (course === null) {
       res.sendStatus(404);

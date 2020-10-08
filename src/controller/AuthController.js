@@ -35,6 +35,6 @@ exports.authRole = (roles) => {
     if (authorized) {
       next();
     }
-    else res.status(401).send("User not authorized.")
+    else res.status(401).send({ msg: "User not authorized."})
   }
 };

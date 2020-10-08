@@ -39,7 +39,7 @@ exports.login = (req, res, next) => {
         }
       }
       console.log("Login Authentication FAIL")
-      res.status(401).send("User or password invalid!")
+      res.status(401).send({ msg: "User or password invalid!"})
         
     })
   }

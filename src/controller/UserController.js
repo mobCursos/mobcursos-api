@@ -4,7 +4,9 @@ const User = require("../model/User");
 
 // list all
 exports.list = (req, res) => {
-  User.find((err, users) => {
+  User.find().
+  populate('courses', ['name', 'description']).
+  exec((err, users) => {
     if (err) {
       res.status(500).send({ msg: err });
       return console.error(err);
@@ -64,7 +66,7 @@ exports.remove = (req, res) => {
   User.findOneAndDelete({ _id: id }, (err, user) => {
     // TODO: handle err
     if (err) {
-      res.status(500).send({ msg: "Erro on course delete."});
+      res.status(500).send({ msg: "Error on course delete."});
       console.error(err);
     } else if (user === null) {
       res.sendStatus(404);
