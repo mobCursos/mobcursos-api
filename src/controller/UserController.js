@@ -70,19 +70,29 @@ exports.remove = (req, res) => {
   });
 };
 
-// search (filter by username)
+// search (filter)
 exports.search = (req, res) => {
-  if(req.query && req.query.username) {
+  if(req.query) {
+    const role = req.query.role
+    const name = req.query.name
     const username = req.query.username
-    User.findOne({ username: username }, (err, user) => {
-      if (user) {
-        res.json(user);
-      } else {
-        res.sendStatus(404);
-      }
-    });
-  } else {
-    res.sendStatus(500);
-  };
+    const email = req.query.email
+
+    User.find({ role: role,
+                name:     { $regex: new RegExp(name, "ig") }, 
+                username: { $regex: new RegExp(username, "ig") }, 
+                email:    { $regex: new RegExp(email, "ig") } 
   
+              }, (err, user) => {
+                if (err) {
+                  res.status(500).send({ msg: err });
+                  return console.error(err);
+                }
+                if (user) {
+                  res.json(user);
+                } else {
+                  res.status(404).send({ msg: "User not found" });
+                }
+              });
+    }
 };
