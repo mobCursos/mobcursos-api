@@ -78,20 +78,19 @@ exports.search = (req, res) => {
     const username = req.query.username
     const email = req.query.email
 
-    User.find({ role: role,
+    User.find({ role:     role,
                 name:     { $regex: new RegExp(name, "ig") }, 
                 username: { $regex: new RegExp(username, "ig") }, 
                 email:    { $regex: new RegExp(email, "ig") } 
-  
-              }, (err, user) => {
+              }, (err, users) => {
                 if (err) {
                   res.status(500).send({ msg: err });
                   return console.error(err);
                 }
-                if (user) {
-                  res.json(user);
+                if (users) {
+                  res.json(users);
                 } else {
-                  res.status(404).send({ msg: "User not found" });
+                  res.status(404).send({ msg: "Users not found." });
                 }
               });
     }
