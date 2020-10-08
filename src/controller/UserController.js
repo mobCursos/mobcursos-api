@@ -19,7 +19,7 @@ exports.get_by_id = (req, res) => {
     if (user) {
       res.json(user);
     } else {
-      res.sendStatus(404);
+      res.status(404).send({ msg: "User not found" });
     }
   });
 };
