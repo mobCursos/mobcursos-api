@@ -2,16 +2,13 @@
 let express = require("express");
 let router = express.Router();
 const controller = require("../controller/UserController");
-// let { verifyJWT }= require("../controller/AuthController")
+const { authRole } = require("../controller/AuthController");
 
-// router.use(verifyJWT)
-
-router.get("/", controller.list);
+router.get("/", authRole(["admin"]), controller.list);
 // use /search before /:id
-router.get("/search", controller.search);
-router.get("/:id", controller.get_by_id);
-router.post("/", controller.add);
+router.get("/search", authRole(["admin"), controller.search);
+router.get("/:id", authRole(['admin']), controller.get_by_id);
 router.put("/:id", controller.alter);
-router.delete("/:id", controller.remove);
+router.delete("/:id", authRole(['admin']), controller.remove);
 
 module.exports = router;

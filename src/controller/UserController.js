@@ -38,17 +38,22 @@ exports.add = (req, res) => {
 exports.alter = (req, res) => {
   let id = req.params.id;
   let userAlter = req.body;
-  User.findOneAndUpdate(
-    { _id: id },
-    userAlter,
-    { new: true },
-    (err, userActual) => {
-      if (err) {
-        res.send(err);
+  // "aluno" and "prof" roles can only alter their own users
+  if ( req.userRole != "admin" && req.userId != id) {
+    res.sendStatus(401)
+  } else {
+    User.findOneAndUpdate(
+      { _id: id },
+      userAlter,
+      { new: true },
+      (err, userActual) => {
+        if (err) {
+          res.send(err);
+        }
+        res.json(userActual);
       }
-      res.json(userActual);
-    }
-  );
+    );
+  }
 };
 
 exports.remove = (req, res) => {

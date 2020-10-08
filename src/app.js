@@ -52,7 +52,7 @@ app.use("/api", routeLogin);
 app.use(verifyJWT);
 
 // // following routes use verifyJWT for authentication
-app.use("/api/users", authRole(['admin']), routeUser);
+app.use("/api/users", routeUser);
 app.use("/api/courses", routeCourse);
 
 
