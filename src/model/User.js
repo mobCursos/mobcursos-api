@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-// adicionado pelo prof
 mongoose.Promise = global.Promise
 
 const userSchema = new mongoose.Schema(

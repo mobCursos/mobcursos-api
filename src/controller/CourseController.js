@@ -4,6 +4,7 @@ const User = require("../model/User");
 exports.list = (req, res) => {
   Course.find().
   populate('students', ['name', 'username']).
+  populate('teacher', ['name', 'username']).
   exec((err, courses) => {
     if (err) {
       res.status(500).send({ msg: err });
@@ -17,6 +18,7 @@ exports.list = (req, res) => {
 exports.get_by_id = (req, res) => {
   Course.findOne({ _id: req.params.id }).
   populate('students', ['name', 'username']).
+  populate('teacher', ['name', 'username']).
   exec((err, course) => {
     if (course) {
       res.json(course);
@@ -29,7 +31,7 @@ exports.get_by_id = (req, res) => {
 // add
 exports.add = (req, res) => {
   const teacherId = req.userId;
-  req.body.teacher_id = teacherId;
+  req.body.teacher = teacherId;
   const newCourse = new Course(req.body);
   newCourse.save((err, course) => {
     if (err) {
@@ -85,7 +87,7 @@ exports.subscribe = async function(req, res) {
     const existsCourse =  await existsCourseId(courseId);
     if (existsCourse) {
       // (fazer em etapa anterior, no crud cursos)
-      // pesquisar cursos (somente cursos em que aluno não está matriculado)
+      // pesquisar cursos (somente cursos em que student não está matriculado)
   
       let subscribed = await isStudentSubscribed(courseId, studentId)
   
@@ -136,7 +138,7 @@ exports.unsubscribe = async function(req, res) {
     const existsCourse =  await existsCourseId(courseId);
     if (existsCourse) {
       // (fazer em etapa anterior, no crud cursos)
-      // pesquisar cursos (somente cursos em que aluno não está matriculado)
+      // pesquisar cursos (somente cursos em que student não está matriculado)
 
       let subscribed = await isStudentSubscribed(courseId, studentId)
 
@@ -213,7 +215,10 @@ exports.search = (req, res) => {
 
     Course.find({ name:        { $regex: new RegExp(name, "ig") }, 
                   description: { $regex: new RegExp(description, "ig") }
-              }, (err, courses) => {
+              })
+              .populate('students', ['name', 'username'])
+              .populate('teacher', ['name', 'username'])
+              .exec((err, courses) => {
                 if (err) {
                   res.status(500).send({ msg: err });
                   return console.error(err);

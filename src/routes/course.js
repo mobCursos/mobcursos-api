@@ -8,10 +8,10 @@ router.get("/", controller.list);
 router.get("/search", controller.search);
 router.get("/:id", controller.get_by_id);
 
-router.post("/subscribe", authRole(['aluno']), controller.subscribe);
-router.post("/unsubscribe", authRole(['aluno']), controller.unsubscribe);
+router.post("/subscribe", authRole(['student']), controller.subscribe);
+router.post("/unsubscribe", authRole(['student']), controller.unsubscribe);
 
-router.post("/", authRole(['prof']), controller.add);
+router.post("/", authRole(['teacher']), controller.add);
 
 router.put("/:id", controller.alter);
 router.delete("/:id", controller.remove);

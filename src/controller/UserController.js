@@ -1,7 +1,5 @@
 const User = require("../model/User");
 
-// TODO: search (see -> https://github.com/profries/pi4_2020_2_crud_produtos/blob/master/controller/produto_controller.js)
-
 // list all
 exports.list = (req, res) => {
   User.find().
@@ -40,7 +38,7 @@ exports.add = (req, res) => {
 exports.alter = (req, res) => {
   let id = req.params.id;
   let userAlter = req.body;
-  // "aluno" and "prof" roles can only alter their own users
+  // "student" and "teacher" roles can only alter their own users
   if ( req.userRole != "admin" && req.userId != id) {
     // Forbidden: client is known but cannot access this content
     res.sendStatus(403)
