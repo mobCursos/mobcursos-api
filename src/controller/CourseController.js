@@ -50,7 +50,7 @@ exports.alter = (req, res) => {
     { new: true },
     (err, courseActual) => {
       if (err) {
-        res.status(500).send({ msg: "Error on course update." });
+        res.sendStatus(400);
         console.error(err);
       } else if (courseActual === null) {
         res.sendStatus(404);
@@ -65,7 +65,7 @@ exports.remove = (req, res) => {
   Course.findOneAndDelete({ _id: id }, (err, course) => {
     // TODO: handle err
     if (err) {
-      res.status(500).send({ msg: "Error on course delete."});
+      res.sendStatus(400);
       console.error(err);
     } else if (course === null) {
       res.sendStatus(404);

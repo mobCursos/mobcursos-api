@@ -42,7 +42,8 @@ exports.alter = (req, res) => {
   let userAlter = req.body;
   // "aluno" and "prof" roles can only alter their own users
   if ( req.userRole != "admin" && req.userId != id) {
-    res.sendStatus(401)
+    // Forbidden: client is known but cannot access this content
+    res.sendStatus(403)
   } else {
     User.findOneAndUpdate(
       { _id: id },
@@ -50,7 +51,7 @@ exports.alter = (req, res) => {
       { new: true },
       (err, userActual) => {
         if (err) {
-          res.status(500).send({ msg: "Error on user update." });
+          res.sendStatus(400);
           console.error(err);
         } else if (userActual === null) {
           res.sendStatus(404);
@@ -66,7 +67,7 @@ exports.remove = (req, res) => {
   User.findOneAndDelete({ _id: id }, (err, user) => {
     // TODO: handle err
     if (err) {
-      res.status(500).send({ msg: "Error on course delete."});
+      res.sendStatus(400);
       console.error(err);
     } else if (user === null) {
       res.sendStatus(404);

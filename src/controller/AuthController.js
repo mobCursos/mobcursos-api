@@ -35,6 +35,7 @@ exports.authRole = (roles) => {
     if (authorized) {
       next();
     }
-    else res.status(401).send({ msg: "User not authorized."})
+    // Forbidden: client is known but cannot access this content
+    else res.sendStatus(403)
   }
 };

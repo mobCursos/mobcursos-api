@@ -70,5 +70,6 @@ exports.signin = async (req, res, next) => {
 
 exports.logout = (req, res) => {
   console.log("Logout - not implemented");
+  // make token expire
   res.status(200).send("Logout - not imnplemented")
 };
