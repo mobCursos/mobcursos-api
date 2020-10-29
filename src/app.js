@@ -7,6 +7,9 @@ const mongoose = require("mongoose");
 const morgan = require("morgan");
 require('dotenv-safe').config();
 
+// disable auth on .env only for quick tests purpose
+const enable_auth = process.env.ENABLE_AUTH;
+
 // import controller
 const { verifyJWT, authRole } = require("./controller/AuthController");
 
@@ -50,10 +53,15 @@ app.use(morgan("combined", { stream: accessLogStream }));
 app.use(morgan("combined"));
 
 // use routes (and api paths) after middlewares
-// comment the following line to ignore login
+
+if (enable_auth === true) {
+// login
 app.use("/api", routeLogin);
-// comment the folowing line to ignore jwt auth
+// jwt auth
 app.use(verifyJWT);
+} else {
+  console.log("WARNING: AUTH DISABLED");
+}
 
 // // following routes use verifyJWT for authentication
 app.use("/api/users", routeUser);
