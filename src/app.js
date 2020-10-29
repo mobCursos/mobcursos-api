@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
 const app = express();
@@ -37,6 +38,9 @@ db.once("open", () => {
   // connected
   console.log("Connection to database estabilished");
 });
+
+// cors
+app.use(cors());
 
 // middlewares
 app.use(express.json()); // for parsing application/json
