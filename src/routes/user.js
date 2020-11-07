@@ -8,7 +8,7 @@ let router = express.Router();
 const controller = require("../controller/UserController");
 const { authRole } = require("../controller/AuthController");
 
-if (enable_auth === true) {
+if (enable_auth === 'true') {
   router.get("/", authRole(["admin"]), controller.list);
 }
 else {

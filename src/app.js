@@ -54,7 +54,7 @@ app.use(morgan("combined"));
 
 // use routes (and api paths) after middlewares
 
-if (enable_auth === true) {
+if (enable_auth === 'true') {
 // login
 app.use("/api", routeLogin);
 // jwt auth
