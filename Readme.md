@@ -1,11 +1,13 @@
-Using prettier
+# mobCursos API
+
+## prettier
 
 Recommended to be installed in all this project contributors workstations
 
 https://prettier.io/docs/en/install.html
 
-Para bcrypt
+## bcrypt 
 
-npm i --global windows-build-tools
+Install windows-build-tools to enable bcrypt
 
-npm i bcrypt
+`npm i --global windows-build-tools`
