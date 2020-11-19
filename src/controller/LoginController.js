@@ -49,7 +49,7 @@ exports.signin = async (req, res, next) => {
   if (await existUser(req.body.username)) {
     const errorMsg = 'Username already in use.'
     console.log('Username already in use.')
-    res.status(500).send({ msg: errorMsg })
+    res.status(403).send({ msg: errorMsg })
   } 
   else {
     const plaintextPassword = req.body.password;

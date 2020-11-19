@@ -60,6 +60,8 @@ app.use("/api", routeLogin);
 // jwt auth
 app.use(verifyJWT);
 } else {
+  // login - to use register toute
+  app.use("/api", routeLogin);
   console.log("WARNING: AUTH DISABLED");
 }
 
