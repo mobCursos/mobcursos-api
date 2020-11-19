@@ -39,7 +39,7 @@ exports.alter = (req, res) => {
   let id = req.params.id;
   let userAlter = req.body;
   // "student" and "teacher" roles can only alter their own users
-  if ( req.userRole != "admin" && req.userId != id) {
+  if ( process.env.ENABLE_AUTH === 'true' && req.userRole != "admin" && req.userId != id) {
     // Forbidden: client is known but cannot access this content
     res.sendStatus(403)
   } else {
