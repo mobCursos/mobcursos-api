@@ -83,20 +83,23 @@ exports.search = (req, res) => {
     const username = req.query.username
     const email = req.query.email
 
-    User.find({ role:     role,
-                name:     { $regex: new RegExp(name, "ig") }, 
-                username: { $regex: new RegExp(username, "ig") }, 
-                email:    { $regex: new RegExp(email, "ig") } 
-              }, (err, users) => {
-                if (err) {
-                  res.status(500).send({ msg: err });
-                  return console.error(err);
-                }
-                if (users) {
-                  res.json(users);
-                } else {
-                  res.status(404).send({ msg: "Users not found." });
-                }
-              });
-    }
+    User.find(
+      { $or: [
+        { role:     { $regex: new RegExp(role, "ig") } },
+        { name:     { $regex: new RegExp(name, "ig") } }, 
+        { username: { $regex: new RegExp(username, "ig") } }, 
+        { email:    { $regex: new RegExp(email, "ig") } }
+        ]
+      }, (err, users) => {
+        if (err) {
+          res.status(500).send({ msg: err });
+          return console.error(err);
+        }
+        if (users) {
+          res.json(users);
+        } else {
+          res.status(404).send({ msg: "Users not found." });
+        }
+      });
+  }
 };

@@ -213,9 +213,11 @@ exports.search = (req, res) => {
     const name = req.query.name
     const description = req.query.description
 
-    Course.find({ name:        { $regex: new RegExp(name, "ig") }, 
-                  description: { $regex: new RegExp(description, "ig") }
-              })
+    Course.find({$or: [
+                        {name:        { $regex: new RegExp(name, "ig") }}, 
+                        {description: { $regex: new RegExp(description, "ig") }}
+                      ]
+                })
               .populate('students', ['name', 'username'])
               .populate('teacher', ['name', 'username'])
               .exec((err, courses) => {
