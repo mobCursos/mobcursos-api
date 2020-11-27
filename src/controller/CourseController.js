@@ -35,9 +35,6 @@ exports.list = (req, res) => {
 exports.listOwn = (req, res) => {
   const userRole = req.userRole;
   const userId = req.userId;
-  console.log('LIST OWN')
-  console.log(userRole);
-  console.log(userId);
   if (userRole == 'teacher') {     
     Course.find({ teacher: userId}).
     populate('students', ['name', 'username']).
