@@ -17,6 +17,7 @@ const { verifyJWT, authRole } = require("./controller/AuthController");
 const routeLogin = require("./routes/login");
 const routeUser = require("./routes/user");
 const routeCourse = require("./routes/course");
+const routeCourseNoAuth = require("./routes/course-noauth");
 
 // log file usign morgan
 // create a write stream (append mode)
@@ -51,6 +52,10 @@ app.use(express.urlencoded({ extended: true })); // for parsing applications/x-w
 // log middleware
 app.use(morgan("combined", { stream: accessLogStream }));
 app.use(morgan("combined"));
+
+// no auth routes fos users not logged in
+app.use("/api/courses-noauth", routeCourseNoAuth);
+
 
 // use routes (and api paths) after middlewares
 

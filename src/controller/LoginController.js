@@ -29,12 +29,15 @@ exports.login = (req, res, next) => {
           // user params for use in authorization middleware
           const id = user._id
           const role = user.role
+          const expiresIn = 3600 // seconds
           console.log("role login: " + role)
           var token = jwt.sign({id, role}, process.env.SECRET, {
-            expiresIn: "1h"
+            expiresIn: expiresIn
           });
           return res.status(201).send({
             auth: true,
+            role: role,
+            expiresIn: expiresIn,
             token: token});
         }
       }
