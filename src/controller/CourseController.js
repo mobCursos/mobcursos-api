@@ -1,18 +1,67 @@
 const Course = require("../model/Course");
 const User = require("../model/User");
 
+// list all courses
 exports.list = (req, res) => {
-  Course.find().
-  populate('students', ['name', 'username']).
-  populate('teacher', ['name', 'username']).
-  exec((err, courses) => {
-    if (err) {
-      res.status(500).send({ msg: err });
-      return console.error(err);
-    }
-    res.json(courses);
-  });
+  const userRole = req.userRole;
+  if (userRole == 'admin') {     
+    Course.find().
+    populate('students', ['name', 'username']).
+    populate('teacher', ['name', 'username']).
+    exec((err, courses) => {
+      if (err) {
+        res.status(500).send({ msg: err });
+        return console.error(err);
+      }
+      res.json(courses);
+    });
+
+  // no admin or noauth user
+  } else {
+    Course.find().
+    select(['name', 'description', 'teacher']).
+    populate('teacher', ['name']).
+    exec((err, courses) => {
+      if (err) {
+        res.status(500).send({ msg: err });
+        return console.error(err);
+      }
+      res.json(courses);
+    });
+  }
 };
+
+// list all courses of the user (different responses by role student or teacher)
+exports.listOwn = (req, res) => {
+  const userRole = req.userRole;
+  const userId = req.userId;
+  console.log('LIST OWN')
+  console.log(userRole);
+  console.log(userId);
+  if (userRole == 'teacher') {     
+    Course.find({ teacher: userId}).
+    populate('students', ['name', 'username']).
+    populate('teacher', ['name', 'username']).
+    exec((err, courses) => {
+      if (err) {
+        res.status(500).send({ msg: err });
+        return console.error(err);
+      }
+      res.json(courses);
+    });
+  } else if (userRole == 'student') {     
+    User.findOne({ _id: userId}).
+    populate('courses', ['name', 'description']).
+    exec((err, user) => {
+      if (err) {
+        res.status(500).send({ msg: err });
+        return console.error(err);
+      }
+      res.json(user.courses);
+    });
+  } 
+  
+}; 
 
 // get by _id
 exports.get_by_id = (req, res) => {
