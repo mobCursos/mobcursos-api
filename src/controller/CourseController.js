@@ -48,16 +48,24 @@ exports.listOwn = (req, res) => {
     });
   } else if (userRole == 'student') {     
     User.findOne({ _id: userId}).
-    populate('courses', ['name', 'description']).
     exec((err, user) => {
       if (err) {
         res.status(500).send({ msg: err });
         return console.error(err);
       }
-      res.json(user.courses);
+      const coursesId = user.courses;
+      Course.find({ _id: coursesId }).
+      populate('teacher', 'name').
+      select(['name','description']).
+      exec((err, courses) => {
+        if (err) {
+          res.status(500).send({ msg: err });
+          return console.error(err);
+        }
+        res.json(courses);
+      });
     });
   } 
-  
 }; 
 
 // get by _id
