@@ -92,7 +92,7 @@ exports.listAvailable = (req, res) => {
         return console.error(err);
       }
       const coursesId = user.courses;
-      Course.find({ _id: {$not: {$eq: coursesId}}}).
+      Course.find({ _id: {$nin: coursesId}}).
       populate('teacher', 'name').
       select(['name','description']).
       exec((err, courses) => {
