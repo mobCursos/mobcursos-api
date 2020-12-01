@@ -68,6 +68,44 @@ exports.listOwn = (req, res) => {
   } 
 }; 
 
+// list all courses not of the user (different responses by role student or teacher)
+// TODO: join listOwn and listAvailable
+exports.listAvailable = (req, res) => {
+  const userRole = req.userRole;
+  const userId = req.userId;
+  if (userRole == 'teacher') {     
+    Course.find({ teacher: {$not: {$eq: userId }}}).
+    populate('students', ['name', 'username']).
+    populate('teacher', ['name', 'username']).
+    exec((err, courses) => {
+      if (err) {
+        res.status(500).send({ msg: err });
+        return console.error(err);
+      }
+      res.json(courses);
+    });
+  } else if (userRole == 'student') {     
+    User.findOne({ _id: userId}).
+    exec((err, user) => {
+      if (err) {
+        res.status(500).send({ msg: err });
+        return console.error(err);
+      }
+      const coursesId = user.courses;
+      Course.find({ _id: {$not: {$eq: coursesId}}}).
+      populate('teacher', 'name').
+      select(['name','description']).
+      exec((err, courses) => {
+        if (err) {
+          res.status(500).send({ msg: err });
+          return console.error(err);
+        }
+        res.json(courses);
+      });
+    });
+  } 
+}; 
+
 // get by _id
 exports.get_by_id = (req, res) => {
   Course.findOne({ _id: req.params.id }).

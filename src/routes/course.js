@@ -6,6 +6,7 @@ const { authRole } = require("../controller/AuthController");
 // todo: define roles
 router.get("/", controller.list);
 router.get("/own", authRole(['teacher','student']), controller.listOwn);
+router.get("/available", authRole(['teacher','student']), controller.listAvailable);
 router.get("/search", controller.search);
 router.get("/:id", controller.get_by_id);
 
