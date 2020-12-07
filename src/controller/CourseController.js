@@ -19,7 +19,7 @@ exports.list = (req, res) => {
   // no admin or noauth user
   } else {
     Course.find().
-    select(['name', 'description', 'teacher']).
+    select(['name', 'category', 'description', 'teacher']).
     populate('teacher', ['name']).
     exec((err, courses) => {
       if (err) {
