@@ -56,7 +56,7 @@ exports.listOwn = (req, res) => {
       const coursesId = user.courses;
       Course.find({ _id: coursesId }).
       populate('teacher', 'name').
-      select(['name','description']).
+      select(['name','description','category']).
       exec((err, courses) => {
         if (err) {
           res.status(500).send({ msg: err });
@@ -94,7 +94,7 @@ exports.listAvailable = (req, res) => {
       const coursesId = user.courses;
       Course.find({ _id: {$nin: coursesId}}).
       populate('teacher', 'name').
-      select(['name','description']).
+      select(['name','description','category']).
       exec((err, courses) => {
         if (err) {
           res.status(500).send({ msg: err });
