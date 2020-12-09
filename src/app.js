@@ -45,7 +45,6 @@ db.once("open", () => {
 
 // cors
 app.use(cors());
-app.options('*', cors());
 
 // middlewares
 app.use(express.json()); // for parsing application/json
