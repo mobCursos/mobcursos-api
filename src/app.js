@@ -44,6 +44,8 @@ db.once("open", () => {
 });
 
 // cors
+
+app.options('*', cors());
 app.use(cors());
 
 // middlewares
